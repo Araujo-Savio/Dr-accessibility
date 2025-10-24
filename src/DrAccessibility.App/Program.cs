@@ -183,7 +183,8 @@ void UpdatePatient()
     Console.Write("Novo nome (enter para manter): ");
     patient.FullName = ReadOptionalLine(patient.FullName);
 
-    Console.WriteLine($"Data de nascimento atual: {(patient.BirthDate.HasValue ? patient.BirthDate: "não informada")}");
+    var birthDateDisplay = patient.BirthDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) ?? "não informada";
+    Console.WriteLine($"Data de nascimento atual: {birthDateDisplay}");
     Console.Write("Nova data de nascimento (dd/mm/aaaa) ou enter para manter: ");
     var newBirth = ReadDateOnly();
     if (newBirth.HasValue)
