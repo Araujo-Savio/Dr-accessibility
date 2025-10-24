@@ -25,14 +25,19 @@ src/
 ## Como executar
 
 1. Instale o [.NET 7 SDK](https://dotnet.microsoft.com/pt-br/download).
-2. No diretório raiz do repositório execute:
+2. No diretório raiz do repositório execute o build da solução para garantir que todas as dependências foram restauradas:
 
    ```bash
-   dotnet restore src/DrAccessibility.App/DrAccessibility.App.csproj
+   dotnet build DrAccessibility.sln
+   ```
+
+3. Para iniciar a aplicação em modo interativo utilize:
+
+   ```bash
    dotnet run --project src/DrAccessibility.App/DrAccessibility.App.csproj
    ```
 
-3. O arquivo `clinic.db` será criado automaticamente na primeira execução, armazenando todos os dados localmente.
+4. O arquivo `clinic.db` será criado automaticamente na primeira execução, armazenando todos os dados localmente.
 
 ## Uso rápido
 
