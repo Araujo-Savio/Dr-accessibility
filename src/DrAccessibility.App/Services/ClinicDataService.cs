@@ -22,6 +22,12 @@ public class ClinicDataService
         return connection;
     }
 
+    private static object ToDbString(string? value) =>
+        value is null ? DBNull.Value : value;
+
+    private static string GetStringOrDefault(SqliteDataReader reader, int ordinal) =>
+        reader.IsDBNull(ordinal) ? string.Empty : reader.GetString(ordinal);
+
     private static string? ToSqlDate(DateOnly? date) => date?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
     private static DateOnly? FromSqlDate(string? value)
@@ -47,11 +53,11 @@ public class ClinicDataService
                                SELECT last_insert_rowid();";
         command.Parameters.AddWithValue("$name", patient.FullName);
         command.Parameters.AddWithValue("$birthDate", ToSqlDate(patient.BirthDate) ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue("$gender", patient.Gender);
-        command.Parameters.AddWithValue("$document", patient.DocumentId);
-        command.Parameters.AddWithValue("$contact", patient.ContactInfo);
-        command.Parameters.AddWithValue("$address", patient.Address);
-        command.Parameters.AddWithValue("$notes", patient.Notes);
+        command.Parameters.AddWithValue("$gender", ToDbString(patient.Gender));
+        command.Parameters.AddWithValue("$document", ToDbString(patient.DocumentId));
+        command.Parameters.AddWithValue("$contact", ToDbString(patient.ContactInfo));
+        command.Parameters.AddWithValue("$address", ToDbString(patient.Address));
+        command.Parameters.AddWithValue("$notes", ToDbString(patient.Notes));
 
         var result = command.ExecuteScalar();
         return (int)(long)result!;
@@ -72,11 +78,11 @@ public class ClinicDataService
                                WHERE Id = $id";
         command.Parameters.AddWithValue("$name", patient.FullName);
         command.Parameters.AddWithValue("$birthDate", ToSqlDate(patient.BirthDate) ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue("$gender", patient.Gender);
-        command.Parameters.AddWithValue("$document", patient.DocumentId);
-        command.Parameters.AddWithValue("$contact", patient.ContactInfo);
-        command.Parameters.AddWithValue("$address", patient.Address);
-        command.Parameters.AddWithValue("$notes", patient.Notes);
+        command.Parameters.AddWithValue("$gender", ToDbString(patient.Gender));
+        command.Parameters.AddWithValue("$document", ToDbString(patient.DocumentId));
+        command.Parameters.AddWithValue("$contact", ToDbString(patient.ContactInfo));
+        command.Parameters.AddWithValue("$address", ToDbString(patient.Address));
+        command.Parameters.AddWithValue("$notes", ToDbString(patient.Notes));
         command.Parameters.AddWithValue("$id", patient.Id);
 
         command.ExecuteNonQuery();
@@ -128,11 +134,11 @@ public class ClinicDataService
         Id = reader.GetInt32(0),
         FullName = reader.GetString(1),
         BirthDate = FromSqlDate(reader.IsDBNull(2) ? null : reader.GetString(2)),
-        Gender = reader.GetString(3),
-        DocumentId = reader.GetString(4),
-        ContactInfo = reader.GetString(5),
-        Address = reader.GetString(6),
-        Notes = reader.GetString(7)
+        Gender = GetStringOrDefault(reader, 3),
+        DocumentId = GetStringOrDefault(reader, 4),
+        ContactInfo = GetStringOrDefault(reader, 5),
+        Address = GetStringOrDefault(reader, 6),
+        Notes = GetStringOrDefault(reader, 7)
     };
 
     public int ScheduleConsultation(Consultation consultation)
@@ -144,8 +150,8 @@ public class ClinicDataService
                                SELECT last_insert_rowid();";
         command.Parameters.AddWithValue("$patientId", consultation.PatientId);
         command.Parameters.AddWithValue("$date", ToSqlDateTime(consultation.ScheduledDate));
-        command.Parameters.AddWithValue("$notes", consultation.Notes);
-        command.Parameters.AddWithValue("$anamnesis", consultation.Anamnesis);
+        command.Parameters.AddWithValue("$notes", ToDbString(consultation.Notes));
+        command.Parameters.AddWithValue("$anamnesis", ToDbString(consultation.Anamnesis));
 
         var result = command.ExecuteScalar();
         return (int)(long)result!;
@@ -161,8 +167,8 @@ public class ClinicDataService
                                    Anamnesis = $anamnesis
                                WHERE Id = $id";
         command.Parameters.AddWithValue("$date", ToSqlDateTime(consultation.ScheduledDate));
-        command.Parameters.AddWithValue("$notes", consultation.Notes);
-        command.Parameters.AddWithValue("$anamnesis", consultation.Anamnesis);
+        command.Parameters.AddWithValue("$notes", ToDbString(consultation.Notes));
+        command.Parameters.AddWithValue("$anamnesis", ToDbString(consultation.Anamnesis));
         command.Parameters.AddWithValue("$id", consultation.Id);
         command.ExecuteNonQuery();
     }
@@ -194,8 +200,8 @@ public class ClinicDataService
             Id = reader.GetInt32(0),
             PatientId = reader.GetInt32(1),
             ScheduledDate = FromSqlDateTime(reader.GetString(2)),
-            Notes = reader.GetString(3),
-            Anamnesis = reader.GetString(4)
+            Notes = GetStringOrDefault(reader, 3),
+            Anamnesis = GetStringOrDefault(reader, 4)
         };
     }
 
@@ -215,8 +221,8 @@ public class ClinicDataService
                 Id = reader.GetInt32(0),
                 PatientId = reader.GetInt32(1),
                 ScheduledDate = FromSqlDateTime(reader.GetString(2)),
-                Notes = reader.GetString(3),
-                Anamnesis = reader.GetString(4)
+                Notes = GetStringOrDefault(reader, 3),
+                Anamnesis = GetStringOrDefault(reader, 4)
             });
         }
 
@@ -408,9 +414,9 @@ public class ClinicDataService
                 Id = reader.GetInt32(0),
                 FullName = reader.GetString(1),
                 RegistrationNumber = reader.GetString(2),
-                Specialty = reader.GetString(3),
-                ClinicAddress = reader.GetString(4),
-                ContactInfo = reader.GetString(5)
+                Specialty = GetStringOrDefault(reader, 3),
+                ClinicAddress = GetStringOrDefault(reader, 4),
+                ContactInfo = GetStringOrDefault(reader, 5)
             };
         }
 
@@ -431,9 +437,9 @@ public class ClinicDataService
                                    ContactInfo = excluded.ContactInfo;";
         command.Parameters.AddWithValue("$name", profile.FullName);
         command.Parameters.AddWithValue("$registration", profile.RegistrationNumber);
-        command.Parameters.AddWithValue("$specialty", profile.Specialty);
-        command.Parameters.AddWithValue("$address", profile.ClinicAddress);
-        command.Parameters.AddWithValue("$contact", profile.ContactInfo);
+        command.Parameters.AddWithValue("$specialty", ToDbString(profile.Specialty));
+        command.Parameters.AddWithValue("$address", ToDbString(profile.ClinicAddress));
+        command.Parameters.AddWithValue("$contact", ToDbString(profile.ContactInfo));
         command.ExecuteNonQuery();
     }
 }

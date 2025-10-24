@@ -15,19 +15,19 @@ public static class DatabaseInitializer
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             FullName TEXT NOT NULL,
             BirthDate TEXT NULL,
-            Gender TEXT NOT NULL,
-            DocumentId TEXT NOT NULL,
-            ContactInfo TEXT NOT NULL,
-            Address TEXT NOT NULL,
-            Notes TEXT NOT NULL
+            Gender TEXT NULL,
+            DocumentId TEXT NULL,
+            ContactInfo TEXT NULL,
+            Address TEXT NULL,
+            Notes TEXT NULL
         );
 
         CREATE TABLE IF NOT EXISTS Consultations (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             PatientId INTEGER NOT NULL,
             ScheduledDate TEXT NOT NULL,
-            Notes TEXT NOT NULL,
-            Anamnesis TEXT NOT NULL,
+            Notes TEXT NULL,
+            Anamnesis TEXT NULL,
             FOREIGN KEY(PatientId) REFERENCES Patients(Id) ON DELETE CASCADE
         );
 
@@ -60,9 +60,9 @@ public static class DatabaseInitializer
             Id INTEGER PRIMARY KEY CHECK (Id = 1),
             FullName TEXT NOT NULL,
             RegistrationNumber TEXT NOT NULL,
-            Specialty TEXT NOT NULL,
-            ClinicAddress TEXT NOT NULL,
-            ContactInfo TEXT NOT NULL
+            Specialty TEXT NULL,
+            ClinicAddress TEXT NULL,
+            ContactInfo TEXT NULL
         );
         ";
         command.ExecuteNonQuery();
