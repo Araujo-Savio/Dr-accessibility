@@ -7,11 +7,11 @@ namespace DrAccessibility.App.Services;
 
 public class PdfPrescriptionExporter
 {
-    public void Export(Prescription prescription, Patient patient, DoctorProfile doctor, string filePath)
+    public void Export(ExportPrescriptionInput input)
     {
-        if (string.IsNullOrWhiteSpace(filePath))
+        if (string.IsNullOrWhiteSpace(input.FilePath))
         {
-            throw new ArgumentException("Informe um caminho de arquivo válido", nameof(filePath));
+            throw new ArgumentException("Informe um caminho de arquivo válido", nameof(ExportPrescriptionInput.FilePath));
         }
 
         QuestPDF.Settings.License = LicenseType.Community;
@@ -27,19 +27,19 @@ public class PdfPrescriptionExporter
                 page.Header().Column(column =>
                 {
                     column.Spacing(5);
-                    column.Item().Text(doctor.FullName).FontSize(18).SemiBold();
-                    column.Item().Text($"CRM: {doctor.RegistrationNumber}");
-                    if (!string.IsNullOrWhiteSpace(doctor.Specialty))
+                    column.Item().Text(input.Doctor.FullName).FontSize(18).SemiBold();
+                    column.Item().Text($"CRM: {input.Doctor.RegistrationNumber}");
+                    if (!string.IsNullOrWhiteSpace(input.Doctor.Specialty))
                     {
-                        column.Item().Text($"Especialidade: {doctor.Specialty}");
+                        column.Item().Text($"Especialidade: {input.Doctor.Specialty}");
                     }
-                    if (!string.IsNullOrWhiteSpace(doctor.ClinicAddress))
+                    if (!string.IsNullOrWhiteSpace(input.Doctor.ClinicAddress))
                     {
-                        column.Item().Text(doctor.ClinicAddress);
+                        column.Item().Text(input.Doctor.ClinicAddress);
                     }
-                    if (!string.IsNullOrWhiteSpace(doctor.ContactInfo))
+                    if (!string.IsNullOrWhiteSpace(input.Doctor.ContactInfo))
                     {
-                        column.Item().Text(doctor.ContactInfo);
+                        column.Item().Text(input.Doctor.ContactInfo);
                     }
                 });
 
@@ -49,37 +49,37 @@ public class PdfPrescriptionExporter
 
                     column.Item().BorderBottom(1).BorderColor(Colors.Grey.Medium);
 
-                    column.Item().Text($"Paciente: {patient.FullName}").FontSize(16).SemiBold();
-                    if (patient.BirthDate is { } birthDate)
+                    column.Item().Text($"Paciente: {input.Patient.FullName}").FontSize(16).SemiBold();
+                    if (input.Patient.BirthDate is { } birthDate)
                     {
                         var age = CalculateAge(birthDate);
                         column.Item().Text($"Data de nascimento: {birthDate:dd/MM/yyyy} (Idade: {age} anos)");
                     }
-                    if (!string.IsNullOrWhiteSpace(patient.DocumentId))
+                    if (!string.IsNullOrWhiteSpace(input.Patient.DocumentId))
                     {
-                        column.Item().Text($"Documento: {patient.DocumentId}");
+                        column.Item().Text($"Documento: {input.Patient.DocumentId}");
                     }
-                    if (!string.IsNullOrWhiteSpace(patient.ContactInfo))
+                    if (!string.IsNullOrWhiteSpace(input.Patient.ContactInfo))
                     {
-                        column.Item().Text($"Contato: {patient.ContactInfo}");
+                        column.Item().Text($"Contato: {input.Patient.ContactInfo}");
                     }
 
                     column.Item().BorderTop(1).BorderColor(Colors.Grey.Lighten2).PaddingTop(10);
-                    column.Item().Text(prescription.Title).FontSize(16).SemiBold();
-                    column.Item().Text(prescription.Body).LineHeight(1.4f);
+                    column.Item().Text(input.Prescription.Title).FontSize(16).SemiBold();
+                    column.Item().Text(input.Prescription.Body).LineHeight(1.4f);
                 });
 
-                page.Footer().AlignRight().Text($"Emitido em {prescription.CreatedAt:dd/MM/yyyy HH:mm}");
+                page.Footer().AlignRight().Text($"Emitido em {input.Prescription.CreatedAt:dd/MM/yyyy HH:mm}");
             });
         });
 
-        var directory = Path.GetDirectoryName(filePath);
+        var directory = Path.GetDirectoryName(input.FilePath);
         if (!string.IsNullOrWhiteSpace(directory))
         {
             Directory.CreateDirectory(directory);
         }
 
-        document.GeneratePdf(filePath);
+        document.GeneratePdf(input.FilePath);
     }
 
     private static int CalculateAge(DateOnly birthDate)

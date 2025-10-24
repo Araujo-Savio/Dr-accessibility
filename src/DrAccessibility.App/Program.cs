@@ -550,7 +550,15 @@ void ExportPrescriptionToPdf(int? prescriptionId)
         return;
     }
 
-    pdfExporter.Export(prescription, patient, doctor, path);
+    var exportInput = new ExportPrescriptionInput
+    {
+        Prescription = prescription,
+        Patient = patient,
+        Doctor = doctor,
+        FilePath = path
+    };
+
+    pdfExporter.Export(exportInput);
     Console.WriteLine("PDF gerado com sucesso!");
 }
 
