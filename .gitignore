@@ -1,10 +1,12 @@
-﻿bin/
-obj/
-.vs/
-*.user
-*.suo
+# Arquivo de banco local
 *.db
-*.sqlite
-*.db-*
-*.log
-*.tmp
+*.db-shm
+*.db-wal
+
+# Artefatos do .NET
+bin/
+obj/
+
+# Configurações locais
+*.user
+*.swp
