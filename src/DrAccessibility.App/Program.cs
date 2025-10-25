@@ -3,8 +3,7 @@ using System.Linq;
 using DrAccessibility.App.Models;
 using DrAccessibility.App.Services;
 
-var databasePath = Path.Combine(AppContext.BaseDirectory, "clinic.db");
-var dataService = new ClinicDataService(databasePath);
+var dataService = CreateDataService();
 var excelImporter = new ExcelImporter();
 var pdfExporter = new PdfPrescriptionExporter();
 
@@ -101,6 +100,30 @@ while (true)
     catch (Exception ex)
     {
         Console.WriteLine($"Erro: {ex.Message}");
+    }
+}
+
+ClinicDataService CreateDataService()
+{
+    try
+    {
+        var storageRoot = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        if (string.IsNullOrWhiteSpace(storageRoot))
+        {
+            storageRoot = AppContext.BaseDirectory;
+        }
+
+        var appDirectory = Path.Combine(storageRoot, "DrAccessibility");
+        Directory.CreateDirectory(appDirectory);
+
+        var databasePath = Path.Combine(appDirectory, "clinic.db");
+        return new ClinicDataService(databasePath);
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Não foi possível inicializar o banco de dados local: {ex.Message}");
+        Environment.Exit(1);
+        throw;
     }
 }
 

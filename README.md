@@ -37,7 +37,7 @@ src/
    dotnet run --project src/DrAccessibility.App/DrAccessibility.App.csproj
    ```
 
-4. O arquivo `clinic.db` será criado automaticamente na primeira execução, armazenando todos os dados localmente.
+4. O arquivo `clinic.db` será criado automaticamente na primeira execução na pasta de dados do usuário (por exemplo, `%LOCALAPPDATA%/DrAccessibility` no Windows), armazenando todos os dados localmente.
 
 ## Uso rápido
 
